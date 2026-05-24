@@ -10,3 +10,5 @@ __pycache__/
 *.log
 *.pkl
 data/predictions_log.csv
+.venv
+.DS_Store
