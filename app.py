@@ -224,7 +224,7 @@ def api_predict():
         # clamp fill
         vals[1] = max(0.0, min(vals[1], 1.0))
 
-        x = np.array(vals, dtype=float).reshape(1, -1)
+        x = pd.DataFrame([vals], columns=["cap_unified","fill_unified","Current Wins","Current Losses","PRCP"])
         raw_pred = float(model.predict(x)[0])
 
         capacity_input = max(0.0, vals[0])

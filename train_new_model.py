@@ -7,8 +7,8 @@ import pandas as pd
 from joblib import dump
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.impute import SimpleImputer
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.model_selection import KFold, cross_val_score, train_test_split
+from sklearn.metrics import mean_absolute_error, root_mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
 
@@ -59,36 +59,12 @@ def main() -> None:
     pipeline.fit(X_train, y_train)
     holdout_pred = pipeline.predict(X_test)
 
-    rmse = float(mean_squared_error(y_test, holdout_pred, squared=False))
+    rmse = float(root_mean_squared_error(y_test, holdout_pred))
     mae = float(mean_absolute_error(y_test, holdout_pred))
     r2 = float(r2_score(y_test, holdout_pred))
 
-    kfold = KFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
-    cv_rmse = float(
-        (-cross_val_score(
-            pipeline,
-            X,
-            y,
-            scoring="neg_root_mean_squared_error",
-            cv=kfold,
-            n_jobs=1,
-        )).mean()
-    )
-    cv_mae = float(
-        (-cross_val_score(
-            pipeline,
-            X,
-            y,
-            scoring="neg_mean_absolute_error",
-            cv=kfold,
-            n_jobs=1,
-        )).mean()
-    )
-    cv_r2 = float(cross_val_score(pipeline, X, y, scoring="r2", cv=kfold, n_jobs=1).mean())
-
     metrics = {
         "holdout": {"rmse": rmse, "mae": mae, "r2": r2},
-        "cv_mean": {"rmse": cv_rmse, "mae": cv_mae, "r2": cv_r2},
         "features_order": FEATURES,
         "model": "RandomForestRegressor",
         "random_state": RANDOM_STATE,
